@@ -13,23 +13,16 @@ export default function Home() {
 
   const [state, setState] = useState(initialState);
 
-  function readFile(file) {
-    const fileReader = new FileReader();
-
-    fileReader.addEventListener('load', event => {
-      let result;
-      if (typeof (result = event.target.result) === 'string') {
-        const cells = event.target.result.split(/\r\n|\r|\n/);
+  function onInputChange(file) {
+    readFile(file)
+      .then(fileContent => {
+        const terms = getTerms(fileContent);
+        const cells = randomizeTerms(terms);
         setState({ cells });
-      } else {
-        const errorMessages = [
-          'File contents must be of type \'string\'.',
-        ];
-        setState({ errorMessages });
-      }
-    });
-
-    fileReader.readAsText(file);
+      })
+      .catch(error => {
+        setState({ errorMessages: [error.message] });
+      });
   }
 
   const {
@@ -38,16 +31,21 @@ export default function Home() {
     errorMessages = [],
   } = state;
 
-  let table;
+  // Optional UI elements.
+  let table, randomizeAgain, errorMessageUI;
   if (cells.length === 24) {
     const metaTable = createMetaTable(state.cells);
 
     table = createUITable(metaTable);
+
+    function randomizeAgainFn() {
+      setState({ cells: randomizeTerms(cells) });
+    }
+
+    randomizeAgain = <button onClick={randomizeAgainFn}>Randomize again</button>;
   } else if (!initial) {
     errorMessages.push('Text file must have 24 rows.');
   }
-
-  let errorMessageUI;
 
   if (errorMessages.length > 0) {
     errorMessageUI = <span className="error-message">{errorMessages.join('\n')}</span>;
@@ -61,8 +59,9 @@ export default function Home() {
       </Head>
 
       <main>
-        <input type="file" accept=".txt" onChange={event => readFile(event.target.files[0])} />
+        <input type="file" accept=".txt" onChange={event => onInputChange(event.target.files[0])} />
         {table}
+        {randomizeAgain}
         {errorMessageUI}
       </main>
 
@@ -88,6 +87,56 @@ export default function Home() {
       `}</style>
     </div>
   )
+}
+
+/**
+ * @returns a Promise that resolves when the file's text is read.
+ */
+function readFile(file) {
+  const fileReader = new FileReader();
+
+  return new Promise(resolve => {
+    fileReader.addEventListener('load', event => {
+      resolve(event.target.result);
+    });
+
+    fileReader.readAsText(file);
+  });
+}
+
+/**
+ *  @throws if the file content is not of type 'string'.
+ */
+function getTerms(fileContent) {
+  if (typeof fileContent === 'string') {
+    const cells = fileContent.split(/\r\n|\r|\n/);
+
+    return cells;
+  } else {
+    throw new Error('File contents must be of type \'string\'.');
+  }
+}
+
+/**
+ * Implementing Knuth shuffle @see @url https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+ */
+function randomizeTerms(terms) {
+  const randomizedTerms = [...terms];
+
+  const length = randomizedTerms.length;
+  const endIndex = length - 1;
+
+  for (let i = 0; i < endIndex; i++) {
+    const index = Math.floor(
+      Math.random() * (length - i) + i
+    );
+
+    const cache = randomizedTerms[i];
+    randomizedTerms[i] = randomizedTerms[index];
+    randomizedTerms[index] = cache;
+  }
+
+  return randomizedTerms;
 }
 
 function createMetaTable(terms) {
