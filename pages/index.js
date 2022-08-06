@@ -160,7 +160,12 @@ function createMetaTable(terms) {
 function createUITable(table) {
   const tableRows = table.map((row, i) => {
     const cellNumber = i * 5;
-    const cells = row.map((cell, j) => <td key={cellNumber + j}>{cell}</td>);
+    const cells = row.map((cell, j) =>
+      <td key={cellNumber + j}>
+        {cell}
+        <input type="checkbox" />
+      </td>
+    );
 
     return <tr key={i}>{cells}</tr>;
   });
