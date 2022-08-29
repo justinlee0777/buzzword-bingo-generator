@@ -3,7 +3,8 @@ import { useState } from 'react';
 
 import ErrorMessages from '../components/error-messages/index';
 import FileInput from '../components/file-input/index';
-import RandomizeAgain from '../components/randomize-again/index';
+import Randomize from '../components/randomize/index';
+import RegexFormatter from '../components/regex-formatter';
 import Table, { createMetaTable } from '../components/table/index';
 import randomizeTerms from '../utils/randomize-terms.function';
 
@@ -11,6 +12,8 @@ export default function Home() {
   const initialState = {
     // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
     cells: [],
+    // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
+    formatRegex: '[0-9]*\. ',
     // Whether this is the first time the component is rendered.
     initial: true,
     // Error messages to render to the user.
@@ -21,22 +24,27 @@ export default function Home() {
 
   const {
     cells = [],
+    formatRegex = '[0-9]*\. ',
     initial = false,
     errorMessages = [],
   } = state;
 
   // Optional UI elements.
-  let table, randomizeAgain, errorMessageUI;
+  let table, randomize, errorMessageUI;
   if (cells.length === 24) {
-    const metaTable = createMetaTable(state.cells);
+    let tableCells = cells;
+
+    if (formatRegex) {
+      tableCells = formatCells(cells, formatRegex);
+    }
+
+    tableCells = randomizeTerms(tableCells);
+
+    const metaTable = createMetaTable(tableCells);
 
     table = <Table table={metaTable} />;
 
-    function randomizeAgainFn() {
-      setState({ cells: randomizeTerms(cells) });
-    }
-
-    randomizeAgain = <RandomizeAgain randomizeAgainFn={randomizeAgainFn} />
+    randomize = <Randomize randomizeFn={randomizeFn} />
   } else if (!initial) {
     errorMessages.push('Text file must have 24 rows.');
   }
@@ -54,8 +62,9 @@ export default function Home() {
 
       <main>
         <FileInput callback={setState} />
+        <RegexFormatter initialValue={formatRegex} />
         {table}
-        {randomizeAgain}
+        {randomize}
         {errorMessageUI}
       </main>
 
@@ -71,5 +80,21 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
+
+  function randomizeFn() {
+    setState({ cells: randomizeTerms(cells) });
+  }
+
+  /**
+   *
+   * @param {*} cells
+   */
+  function formatCells(cells, replaceExpression) {
+    const regExp = new RegExp(replaceExpression);
+
+    return cells.map(cell => {
+      return cell.replace(regExp, '');
+    });
+  }
 }

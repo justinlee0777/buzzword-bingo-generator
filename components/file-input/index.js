@@ -1,6 +1,5 @@
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
-import randomizeTerms from '../../utils/randomize-terms.function';
 
 /**
  * @param props - property 'callback': Unary function. Sole argument is the state change to propagate to the parent component.
@@ -11,7 +10,7 @@ export default function FileInput(props) {
         readFile(file)
             .then(fileContent => {
                 const terms = getTerms(fileContent);
-                const cells = randomizeTerms(terms);
+                const cells = terms;
 
                 return { cells };
             })

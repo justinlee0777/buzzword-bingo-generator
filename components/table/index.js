@@ -3,15 +3,20 @@
  * - property table: 5x5 array to create the table from.
  */
 export default function Table(props) {
-    const { table } = props;
+    const { table, showCheckboxes = true } = props;
     const tableRows = table.map((row, i) => {
         const cellNumber = i * 5;
-        const cells = row.map((cell, j) =>
-            <td key={cellNumber + j}>
+        const cells = row.map((cell, j) => {
+            let checkboxUI;
+            if (showCheckboxes) {
+                checkboxUI = <input type="checkbox" />;
+            }
+
+            return <td key={cellNumber + j}>
                 {cell}
-                <input type="checkbox" />
-            </td>
-        );
+                {checkboxUI}
+            </td>;
+        });
 
         return <tr key={i}>{cells}</tr>;
     });
