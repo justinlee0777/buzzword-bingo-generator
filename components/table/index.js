@@ -1,21 +1,15 @@
+import { useState } from 'react';
+
 /**
  * @param props
  * - property table: 5x5 array to create the table from.
  */
 export default function Table(props) {
-    const { table, showCheckboxes = true } = props;
+    const { table } = props;
     const tableRows = table.map((row, i) => {
         const cellNumber = i * 5;
         const cells = row.map((cell, j) => {
-            let checkboxUI;
-            if (showCheckboxes) {
-                checkboxUI = <input type="checkbox" />;
-            }
-
-            return <td key={cellNumber + j}>
-                {cell}
-                {checkboxUI}
-            </td>;
+            return <TableCell key={cellNumber + j} cellText={cell} />;
         });
 
         return <tr key={i}>{cells}</tr>;
@@ -29,9 +23,32 @@ export default function Table(props) {
                     border: 1px solid black;
                     border-collapse: collapse;
                 }
+
+                td {
+                    cursor: pointer;
+                    padding: 8px;
+                    text-align: center;
+                    user-select: none;
+                    width: 20%;
+                }
+
+                td.active {
+                    background-color: darkblue;
+                    color: white;
+                }
         `}</style>
         </table>
     );
+}
+
+function TableCell(props) {
+    const { cellText } = props;
+
+    const [isActive, setActive] = useState(false);
+
+    return <td className={isActive ? 'active' : ''} onClick={() => setActive(!isActive)}>
+        {cellText}
+    </td>;
 }
 
 /**
