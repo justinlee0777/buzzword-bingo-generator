@@ -12,6 +12,8 @@ export default function Home() {
   const initialState = {
     // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
     cells: [],
+    // If null, then randomize 'cells'.
+    randomizedCells: null,
     // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
     formatRegex: '[0-9]*\. ',
     // Whether this is the first time the component is rendered.
@@ -24,25 +26,38 @@ export default function Home() {
 
   const {
     cells = [],
+    randomizedCells = null,
     formatRegex = '[0-9]*\. ',
     initial = false,
     errorMessages = [],
   } = state;
 
   // Optional UI elements.
-  let table, randomize, errorMessageUI;
+  let tables, randomize, errorMessageUI;
   if (cells.length === 24) {
     let tableCells = cells;
+
+    const preformattedMetaTable = createMetaTable(tableCells);
 
     if (formatRegex) {
       tableCells = formatCells(cells, formatRegex);
     }
 
-    tableCells = randomizeTerms(tableCells);
+    if (Array.isArray(randomizedCells)) {
+      tableCells = randomizedCells;
+    } else {
+      tableCells = randomizeTerms(tableCells);
+    }
 
     const metaTable = createMetaTable(tableCells);
 
-    table = <Table table={metaTable} />;
+    tables = (
+      <>
+        <Table table={preformattedMetaTable} />
+        <div className="down-arrow"></div>
+        <Table table={metaTable} />
+      </>
+    );
 
     randomize = <Randomize randomizeFn={randomizeFn} />
   } else if (!initial) {
@@ -63,7 +78,7 @@ export default function Home() {
       <main>
         <FileInput callback={setState} />
         <RegexFormatter initialValue={formatRegex} />
-        {table}
+        {tables}
         {randomize}
         {errorMessageUI}
       </main>
@@ -78,12 +93,35 @@ export default function Home() {
         * {
           box-sizing: border-box;
         }
+
+        main {
+          display: inline-flex;
+          flex-direction: column;
+          min-width: 600px;
+        }
+
+        .down-arrow {
+          border: 20px solid;
+          border-color: black transparent transparent transparent;
+          height: 0;
+          margin: 8px auto -12px;
+          width: 0;
+
+          > div:first-of-type {
+            width: 40px;
+            height: 40px;
+            border-left: 1px solid black;
+            border-top: 1px solid black;
+            border-right: 1px solid black;
+            margin: auto;
+          }
+        }
       `}</style>
     </div>
   );
 
   function randomizeFn() {
-    setState({ cells: randomizeTerms(cells) });
+    setState({ cells, randomizedCells: randomizeTerms(cells) });
   }
 
   /**
