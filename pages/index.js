@@ -40,7 +40,7 @@ export default function Home() {
     // If there is an overridden free cell, filter it out. Note: This will write over "tableCells".
     const freeCell = getFreeCell(tableCells);
 
-    const preformattedMetaTable = createMetaTable(tableCells, freeCell);
+    const preformattedMetaTable = createMetaTable(tableCells);
 
     if (formatRegex) {
       tableCells = formatCells(cells, formatRegex);
@@ -52,13 +52,12 @@ export default function Home() {
       tableCells = randomizeTerms(tableCells);
     }
 
-    const metaTable = createMetaTable(tableCells, freeCell);
-
+    const metaTable = createMetaTable(tableCells);
     tables = (
       <>
-        <Table table={preformattedMetaTable} />
+        <Table table={preformattedMetaTable} freeCell={freeCell} />
         <div className="down-arrow"></div>
-        <Table table={metaTable} />
+        <Table table={metaTable} freeCell={freeCell} />
       </>
     );
 
