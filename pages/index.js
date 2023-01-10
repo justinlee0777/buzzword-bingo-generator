@@ -15,7 +15,7 @@ export default function Home() {
     // If null, then randomize 'cells'.
     randomizedCells: null,
     // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
-    formatRegex: '[0-9]*\. ',
+    formatRegex: '[0-9]*[.)] ',
     // Whether this is the first time the component is rendered.
     initial: true,
     // Error messages to render to the user.
@@ -27,17 +27,20 @@ export default function Home() {
   const {
     cells = [],
     randomizedCells = null,
-    formatRegex = '[0-9]*\. ',
+    formatRegex = '[0-9]*[.)] ',
     initial = false,
     errorMessages = [],
   } = state;
 
   // Optional UI elements.
   let tables, randomize, errorMessageUI;
-  if (cells.length === 24) {
+  if (tableHasCorrectLength(cells)) {
     let tableCells = cells;
 
-    const preformattedMetaTable = createMetaTable(tableCells);
+    // If there is an overridden free cell, filter it out. Note: This will write over "tableCells".
+    const freeCell = getFreeCell(tableCells);
+
+    const preformattedMetaTable = createMetaTable(tableCells, freeCell);
 
     if (formatRegex) {
       tableCells = formatCells(cells, formatRegex);
@@ -49,7 +52,7 @@ export default function Home() {
       tableCells = randomizeTerms(tableCells);
     }
 
-    const metaTable = createMetaTable(tableCells);
+    const metaTable = createMetaTable(tableCells, freeCell);
 
     tables = (
       <>
@@ -119,6 +122,29 @@ export default function Home() {
       `}</style>
     </div>
   );
+
+  /**
+   * @returns boolean
+   */
+  function tableHasCorrectLength(cells) {
+    const { length } = cells;
+    return length === 24 || length === 25;
+  }
+
+  /**
+   * Note: This will write over "tableCells".
+   * @returns the overridden free cell or undefined.
+   */
+  function getFreeCell(tableCells) {
+    const freeCellMarker = new RegExp('free[.)] ', 'i');
+    const index = tableCells.findIndex(tableCell => freeCellMarker.test(tableCell));
+    if (index >= 0) {
+      const [freeCell] = tableCells.splice(index, 1);
+      return freeCell.replace(freeCellMarker, '');
+    } else {
+      return undefined;
+    }
+  }
 
   function randomizeFn() {
     setState({ cells, randomizedCells: randomizeTerms(cells) });

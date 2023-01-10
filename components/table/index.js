@@ -53,8 +53,9 @@ function TableCell(props) {
 
 /**
  * @params terms - Array<string>. Cells to format.
+ * @params freeCell - optional. Overrides the "Free square!"
  */
-export function createMetaTable(terms) {
+export function createMetaTable(terms, freeCell = 'Free square!') {
     if (typeof terms !== 'object' && !('length' in terms)) {
         return [];
     }
@@ -63,7 +64,7 @@ export function createMetaTable(terms) {
         terms.slice(0, 5),
         terms.slice(5, 10),
         // Center square is always 'Free square!'
-        terms.slice(10, 12).concat('Free square!', terms.slice(12, 14)),
+        terms.slice(10, 12).concat(freeCell, terms.slice(12, 14)),
         terms.slice(14, 19),
         terms.slice(19, 24),
     ];
