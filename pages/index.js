@@ -77,7 +77,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main style={{ width: '80%' }}>
         <FileInput callback={setState} />
         <RegexFormatter initialValue={formatRegex} />
         {tables}
