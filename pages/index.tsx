@@ -12,7 +12,9 @@ export default function Home(): JSX.Element {
   // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
   const [cells, setCells] = useState<Array<string>>([]);
   // If null, then randomize 'cells'.
-  const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(null);
+  const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(
+    null
+  );
   // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
   const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
   // Error messages to render to the user.
@@ -47,7 +49,7 @@ export default function Home(): JSX.Element {
       </>
     );
 
-    randomize = <Randomize randomizeFn={randomizeFn} />
+    randomize = <Randomize randomizeFn={randomizeFn} />;
   }
 
   if (errorMessages.length > 0) {
@@ -62,18 +64,18 @@ export default function Home(): JSX.Element {
       </Head>
 
       <main style={{ width: '80%' }}>
-        <FileInput callback={cellsOrErrors => {
-          if (cellsOrErrors.cells) {
-            setCells(cellsOrErrors.cells);
-            if (!tableHasCorrectLength(cellsOrErrors.cells)) {
-              setErrorMessages([
-                'Text file must have 24 rows.'
-              ]);
+        <FileInput
+          callback={(cellsOrErrors) => {
+            if (cellsOrErrors.cells) {
+              setCells(cellsOrErrors.cells);
+              if (!tableHasCorrectLength(cellsOrErrors.cells)) {
+                setErrorMessages(['Text file must have 24 rows.']);
+              }
+            } else if (cellsOrErrors.errorMessages) {
+              setErrorMessages(errorMessages);
             }
-          } else if (cellsOrErrors.errorMessages) {
-            setErrorMessages(errorMessages);
-          }
-        }} />
+          }}
+        />
         <RegexFormatter initialValue={formatRegex} />
         {tables}
         {randomize}
@@ -131,7 +133,9 @@ export default function Home(): JSX.Element {
    */
   function getFreeCell(tableCells) {
     const freeCellMarker = new RegExp('free[.)] ', 'i');
-    const index = tableCells.findIndex(tableCell => freeCellMarker.test(tableCell));
+    const index = tableCells.findIndex((tableCell) =>
+      freeCellMarker.test(tableCell)
+    );
     if (index >= 0) {
       const [freeCell] = tableCells.splice(index, 1);
       return freeCell.replace(freeCellMarker, '');
@@ -141,9 +145,7 @@ export default function Home(): JSX.Element {
   }
 
   function randomizeFn() {
-    setRandomizedCells(
-      randomizeTerms(cells)
-    );
+    setRandomizedCells(randomizeTerms(cells));
   }
 
   /**
@@ -153,7 +155,7 @@ export default function Home(): JSX.Element {
   function formatCells(cells, replaceExpression) {
     const regExp = new RegExp(replaceExpression);
 
-    return cells.map(cell => {
+    return cells.map((cell) => {
       return cell.replace(regExp, '');
     });
   }
