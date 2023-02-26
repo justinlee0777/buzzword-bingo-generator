@@ -9,28 +9,14 @@ import Table, { createMetaTable } from '../components/table/index';
 import randomizeTerms from '../utils/randomize-terms.function';
 
 export default function Home(): JSX.Element {
-  const initialState = {
-    // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
-    cells: [],
-    // If null, then randomize 'cells'.
-    randomizedCells: null,
-    // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
-    formatRegex: '[0-9]*[.)] ',
-    // Whether this is the first time the component is rendered.
-    initial: true,
-    // Error messages to render to the user.
-    errorMessages: [],
-  };
-
-  const [state, setState] = useState(initialState);
-
-  const {
-    cells = [],
-    randomizedCells = null,
-    formatRegex = '[0-9]*[.)] ',
-    initial = false,
-    errorMessages = [],
-  } = state;
+  // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
+  const [cells, setCells] = useState<Array<string>>([]);
+  // If null, then randomize 'cells'.
+  const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(null);
+  // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
+  const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
+  // Error messages to render to the user.
+  const [errorMessages, setErrorMessages] = useState<Array<string>>([]);
 
   // Optional UI elements.
   let tables, randomize, errorMessageUI;
@@ -46,7 +32,7 @@ export default function Home(): JSX.Element {
       tableCells = formatCells(cells, formatRegex);
     }
 
-    if (Array.isArray(randomizedCells)) {
+    if (randomizedCells) {
       tableCells = randomizedCells;
     } else {
       tableCells = randomizeTerms(tableCells);
@@ -62,8 +48,6 @@ export default function Home(): JSX.Element {
     );
 
     randomize = <Randomize randomizeFn={randomizeFn} />
-  } else if (!initial) {
-    errorMessages.push('Text file must have 24 rows.');
   }
 
   if (errorMessages.length > 0) {
@@ -78,7 +62,18 @@ export default function Home(): JSX.Element {
       </Head>
 
       <main style={{ width: '80%' }}>
-        <FileInput callback={setState} />
+        <FileInput callback={cellsOrErrors => {
+          if (cellsOrErrors.cells) {
+            setCells(cellsOrErrors.cells);
+            if (!tableHasCorrectLength(cellsOrErrors.cells)) {
+              setErrorMessages([
+                'Text file must have 24 rows.'
+              ]);
+            }
+          } else if (cellsOrErrors.errorMessages) {
+            setErrorMessages(errorMessages);
+          }
+        }} />
         <RegexFormatter initialValue={formatRegex} />
         {tables}
         {randomize}
@@ -146,7 +141,9 @@ export default function Home(): JSX.Element {
   }
 
   function randomizeFn() {
-    setState({ cells, randomizedCells: randomizeTerms(cells) });
+    setRandomizedCells(
+      randomizeTerms(cells)
+    );
   }
 
   /**
