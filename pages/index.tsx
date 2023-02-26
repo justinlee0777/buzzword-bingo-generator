@@ -1,10 +1,10 @@
-import Head from 'next/head'
+import Head from 'next/head';
 import { useState } from 'react';
 
 import ErrorMessages from '../components/error-messages/index';
 import FileInput from '../components/file-input/index';
 import Randomize from '../components/randomize/index';
-import RegexFormatter from '../components/regex-formatter';
+import RegexFormatter from '../components/regex-formatter/index';
 import Table, { createMetaTable } from '../components/table/index';
 import randomizeTerms from '../utils/randomize-terms.function';
 
