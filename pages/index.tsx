@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 
 import ErrorMessages from '../components/error-messages/index';
-import FileInput from '../components/file-input/index';
+import FileInput, { FileInputResult } from '../components/file-input/index';
 import Randomize from '../components/randomize/index';
 import RegexFormatter from '../components/regex-formatter/index';
 import Table, { createMetaTable } from '../components/table/index';
@@ -20,39 +20,29 @@ export default function Home(): JSX.Element {
   // Error messages to render to the user.
   const [errorMessages, setErrorMessages] = useState<Array<string>>([]);
 
-  // Optional UI elements.
-  let tables, randomize, errorMessageUI;
-  if (tableHasCorrectLength(cells)) {
-    let tableCells = cells;
+  let table, randomizedTable, errorMessageUI;
 
+  if (errorMessages.length === 0) {
     // If there is an overridden free cell, filter it out. Note: This will write over "tableCells".
-    const freeCell = getFreeCell(tableCells);
+    const freeCell = getFreeCell(cells);
 
-    const preformattedMetaTable = createMetaTable(tableCells);
-
-    if (formatRegex) {
-      tableCells = formatCells(cells, formatRegex);
+    if (cells.length > 0) {
+      const preformattedMetaTable = createMetaTable(cells);
+      table = <Table table={preformattedMetaTable} freeCell={freeCell} />;
     }
 
     if (randomizedCells) {
-      tableCells = randomizedCells;
-    } else {
-      tableCells = randomizeTerms(tableCells);
+      const metaTable = createMetaTable(randomizedCells);
+
+      randomizedTable = (
+        <>
+          <div className="down-arrow"></div>
+          <Table table={metaTable} freeCell={freeCell} />
+          <Randomize randomizeFn={() => randomizeFn(cells)} />;
+        </>
+      );
     }
-
-    const metaTable = createMetaTable(tableCells);
-    tables = (
-      <>
-        <Table table={preformattedMetaTable} freeCell={freeCell} />
-        <div className="down-arrow"></div>
-        <Table table={metaTable} freeCell={freeCell} />
-      </>
-    );
-
-    randomize = <Randomize randomizeFn={randomizeFn} />;
-  }
-
-  if (errorMessages.length > 0) {
+  } else {
     errorMessageUI = <ErrorMessages messages={errorMessages} />;
   }
 
@@ -64,21 +54,10 @@ export default function Home(): JSX.Element {
       </Head>
 
       <main style={{ width: '80%' }}>
-        <FileInput
-          callback={(cellsOrErrors) => {
-            if (cellsOrErrors.cells) {
-              setCells(cellsOrErrors.cells);
-              if (!tableHasCorrectLength(cellsOrErrors.cells)) {
-                setErrorMessages(['Text file must have 24 rows.']);
-              }
-            } else if (cellsOrErrors.errorMessages) {
-              setErrorMessages(errorMessages);
-            }
-          }}
-        />
+        <FileInput callback={onFileInputCallback} />
         <RegexFormatter initialValue={formatRegex} />
-        {tables}
-        {randomize}
+        {table}
+        {randomizedTable}
         {errorMessageUI}
       </main>
 
@@ -119,44 +98,59 @@ export default function Home(): JSX.Element {
     </div>
   );
 
-  /**
-   * @returns boolean
-   */
-  function tableHasCorrectLength(cells) {
-    const { length } = cells;
-    return length === 24 || length === 25;
-  }
+  function onFileInputCallback(result: FileInputResult): void {
+    const { cells: resultCells, errorMessages: resultErrorMessages } = result;
 
-  /**
-   * Note: This will write over "tableCells".
-   * @returns the overridden free cell or undefined.
-   */
-  function getFreeCell(tableCells) {
-    const freeCellMarker = new RegExp('free[.)] ', 'i');
-    const index = tableCells.findIndex((tableCell) =>
-      freeCellMarker.test(tableCell)
-    );
-    if (index >= 0) {
-      const [freeCell] = tableCells.splice(index, 1);
-      return freeCell.replace(freeCellMarker, '');
-    } else {
-      return undefined;
+    let newErrorMessages = [];
+    if (resultCells) {
+      setCells(resultCells);
+      if (tableHasCorrectLength(resultCells)) {
+        randomizeFn(resultCells);
+      } else {
+        newErrorMessages = errorMessages.concat('Text file must have 24 rows.');
+      }
+      setErrorMessages(newErrorMessages);
+    } else if (resultErrorMessages) {
+      setErrorMessages(resultErrorMessages);
     }
   }
 
-  function randomizeFn() {
-    setRandomizedCells(randomizeTerms(cells));
+  function randomizeFn(cellsToRandomize: Array<string>) {
+    setRandomizedCells(
+      randomizeTerms(formatCells(cellsToRandomize, formatRegex))
+    );
   }
+}
 
-  /**
-   *
-   * @param {*} cells
-   */
-  function formatCells(cells, replaceExpression) {
-    const regExp = new RegExp(replaceExpression);
+function tableHasCorrectLength(cells: Array<string>): boolean {
+  const { length } = cells;
+  return length === 24 || length === 25;
+}
 
-    return cells.map((cell) => {
-      return cell.replace(regExp, '');
-    });
+/**
+ * Note: This will write over "tableCells".
+ * @returns the overridden free cell or undefined.
+ */
+function getFreeCell(tableCells: Array<string>) {
+  const freeCellMarker = new RegExp('free[.)] ', 'i');
+  const index = tableCells.findIndex((tableCell) =>
+    freeCellMarker.test(tableCell)
+  );
+  if (index >= 0) {
+    const [freeCell] = tableCells.splice(index, 1);
+    return freeCell.replace(freeCellMarker, '');
+  } else {
+    return undefined;
   }
+}
+
+function formatCells(
+  cells: Array<string>,
+  replaceExpression: string
+): Array<string> {
+  const regExp = new RegExp(replaceExpression);
+
+  return cells.map((cell) => {
+    return cell.replace(regExp, '');
+  });
 }

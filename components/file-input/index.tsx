@@ -1,11 +1,13 @@
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
 
+export interface FileInputResult {
+  cells?: Array<string>;
+  errorMessages?: Array<string>;
+}
+
 interface FileInputProps {
-  callback?: (cellsOrErrors: {
-    cells?: Array<string>;
-    errorMessages?: Array<string>;
-  }) => void;
+  callback?: (cellsOrErrors: FileInputResult) => void;
 }
 
 /**
