@@ -2,7 +2,7 @@
  * Implementing Knuth shuffle @see @url https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
  * @params terms - Array<string>. Cells to randomize.
  */
-export default function randomizeTerms(terms) {
+export default function randomizeTerms(terms: Array<string>): Array<string> {
     const randomizedTerms = [...terms];
 
     const length = randomizedTerms.length;
