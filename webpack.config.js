@@ -1,3 +1,4 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
@@ -57,7 +58,31 @@ module.exports = (_, argv) => {
     };
 
     return { ...config, ...override };
-  }
+  } else {
+    const override = {
+      plugins: config.plugins.concat(
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: './package.json',
+              transform: (content) => {
+                const json = JSON.parse(content.toString());
 
-  return config;
+                // The current distribution has no dependencies.
+                delete json.dependencies;
+                delete json.devDependencies;
+
+                // Why not delete the scripts at this point.
+                delete json.scripts;
+
+                return JSON.stringify(json);
+              },
+            },
+          ],
+        })
+      ),
+    };
+
+    return { ...config, ...override };
+  }
 };

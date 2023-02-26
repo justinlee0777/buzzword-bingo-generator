@@ -1,6 +1,6 @@
 {
+  "name": "buzzword-bingo-generator",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "start": "npm run build -- --mode=development && http-server -c-1 ./dist",
     "build": "rm -rf dist && webpack",
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/node": "^18.14.1",
     "@types/react": "^18.0.28",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
