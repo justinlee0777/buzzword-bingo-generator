@@ -8,7 +8,7 @@ import RegexFormatter from '../components/regex-formatter/index';
 import Table, { createMetaTable } from '../components/table/index';
 import randomizeTerms from '../utils/randomize-terms.function';
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const initialState = {
     // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
     cells: [],

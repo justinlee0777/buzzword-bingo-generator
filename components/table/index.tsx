@@ -2,14 +2,17 @@ import { useState } from 'react';
 
 const freeCellImageSymbol = new RegExp('\!image');
 
+interface TableProps {
+    table: Array<Array<string>>;
+    freeCell?: string;
+}
+
 /**
  * @param props
  * - property table: 5x5 array to create the table from.
  * - property freeCell: overridden free cell.
  */
-export default function Table(props) {
-    const { table, freeCell } = props;
-
+export default function Table({ table, freeCell }: TableProps): JSX.Element {
     const freeSquareIndex = Math.ceil(25 / 2) - 1;
 
     const tableRows = table.map((row, i) => {
@@ -54,15 +57,14 @@ export default function Table(props) {
     );
 }
 
-/**
- * 
- * @param {*} props
- * - cellText - falsy if 'cellImage' is provided.
- * - cellImage - falsy if 'cellText' is provided.
- */
-function TableCell(props) {
-    const { cellText, cellImage } = props;
+interface TableCellProps {
+    // Must be provided if 'cellImage' is not.
+    cellText?: string;
+    // Must be provided if 'cellText' is not.
+    cellImage?: string;
+}
 
+function TableCell({ cellText, cellImage }: TableCellProps) {
     const [isActive, setActive] = useState(false);
 
     let cellContent;
@@ -77,18 +79,14 @@ function TableCell(props) {
     </td>;
 }
 
-function isImage(freeCell) {
+function isImage(freeCell: string): boolean {
     return freeCellImageSymbol.test(freeCell);
 }
 
 /**
  * @params terms - Array<string>. Cells to format.
  */
-export function createMetaTable(terms) {
-    if (typeof terms !== 'object' && !('length' in terms)) {
-        return [];
-    }
-
+export function createMetaTable(terms: Array<string>): Array<Array<string>> {
     return [
         terms.slice(0, 5),
         terms.slice(5, 10),

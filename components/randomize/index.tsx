@@ -1,7 +1,7 @@
-/**
- * @param props - property 'randomizeFn': function to randomize the table again.
- */
-export default function Randomize(props) {
-    const { randomizeFn } = props;
+export interface RandomizeProps {
+    randomizeFn: () => void;
+}
+
+export default function Randomize({ randomizeFn }: RandomizeProps): JSX.Element {
     return <button onClick={randomizeFn}>Randomize again</button>;
 }

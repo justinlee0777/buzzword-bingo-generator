@@ -1,11 +1,14 @@
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
 
+interface FileInputProps {
+    callback?: (cellsOrErrors: { cells?: Array<string>, errorMessages?: Array<string> }) => void;
+}
+
 /**
  * @param props - property 'callback': Unary function. Sole argument is the state change to propagate to the parent component.
  */
-export default function FileInput(props) {
-    const { callback } = props;
+export default function FileInput({ callback }: FileInputProps): JSX.Element {
     function onInputChange(file) {
         readFile(file)
             .then(fileContent => {

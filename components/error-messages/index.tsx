@@ -1,8 +1,8 @@
-/**
- * @param props - property 'messages': Array<string>. Error messages to render.
- */
-export default function ErrorMessages(props) {
-    const { messages } = props;
+export interface ErrorMessagesProp {
+    messages: Array<string>;
+}
+
+export default function ErrorMessages({ messages }: ErrorMessagesProp): JSX.Element {
     return (
         <span className="error-message">
             {messages.join('\n')}
