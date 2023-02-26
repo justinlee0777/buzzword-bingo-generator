@@ -15,6 +15,7 @@ export default function Home(): JSX.Element {
   const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(
     null
   );
+  const [freeCell, setFreeCell] = useState<string | undefined>(undefined);
   // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
   const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
   // Error messages to render to the user.
@@ -23,9 +24,6 @@ export default function Home(): JSX.Element {
   let table, randomizedTable, errorMessageUI;
 
   if (errorMessages.length === 0) {
-    // If there is an overridden free cell, filter it out. Note: This will write over "tableCells".
-    const freeCell = getFreeCell(cells);
-
     if (cells.length > 0) {
       const preformattedMetaTable = createMetaTable(cells);
       table = <Table table={preformattedMetaTable} freeCell={freeCell} />;
@@ -103,9 +101,12 @@ export default function Home(): JSX.Element {
 
     let newErrorMessages = [];
     if (resultCells) {
-      setCells(resultCells);
       if (tableHasCorrectLength(resultCells)) {
-        randomizeFn(resultCells);
+        const [filteredCells, freeCell] = getFreeCell(resultCells);
+
+        setCells(filteredCells);
+        setFreeCell(freeCell);
+        randomizeFn(filteredCells);
       } else {
         newErrorMessages = errorMessages.concat('Text file must have 24 rows.');
       }
@@ -128,19 +129,21 @@ function tableHasCorrectLength(cells: Array<string>): boolean {
 }
 
 /**
- * Note: This will write over "tableCells".
- * @returns the overridden free cell or undefined.
+ * @returns both the cells without Free! and the free cell
  */
-function getFreeCell(tableCells: Array<string>) {
+function getFreeCell(tableCells: Array<string>): [Array<string>, string?] {
   const freeCellMarker = new RegExp('free[.)] ', 'i');
   const index = tableCells.findIndex((tableCell) =>
     freeCellMarker.test(tableCell)
   );
   if (index >= 0) {
-    const [freeCell] = tableCells.splice(index, 1);
-    return freeCell.replace(freeCellMarker, '');
+    const freeCell = tableCells[index];
+    return [
+      [...tableCells.slice(0, index), ...tableCells.slice(index + 1)],
+      freeCell.replace(freeCellMarker, ''),
+    ];
   } else {
-    return undefined;
+    return [tableCells];
   }
 }
 
