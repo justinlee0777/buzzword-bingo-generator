@@ -1,0 +1,23 @@
+.regex-formatter {
+  display: flex;
+
+  .input-container {
+    position: relative;
+
+    input {
+      padding: 0 16px;
+    }
+
+    span {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+
+      &:first-of-type {
+        &:nth-of-type(2) {
+          right: 8px;
+        }
+      }
+    }
+  }
+}

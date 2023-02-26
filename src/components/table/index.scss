@@ -1,0 +1,19 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+td {
+  cursor: pointer;
+  padding: 8px;
+  text-align: center;
+  user-select: none;
+  width: 20%;
+
+  .active {
+    background-color: darkblue;
+    color: white;
+  }
+}

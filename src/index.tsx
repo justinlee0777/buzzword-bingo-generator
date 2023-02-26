@@ -1,25 +1,25 @@
-import Head from 'next/head';
-import { useState } from 'react';
+import './index.scss';
 
-import ErrorMessages from '../components/error-messages/index';
-import FileInput, { FileInputResult } from '../components/file-input/index';
-import Randomize from '../components/randomize/index';
-import RegexFormatter from '../components/regex-formatter/index';
-import Table, { createMetaTable } from '../components/table/index';
-import randomizeTerms from '../utils/randomize-terms.function';
+import * as React from 'react';
 
-export default function Home(): JSX.Element {
+import ErrorMessages from './components/error-messages/index';
+import FileInput, { FileInputResult } from './components/file-input/index';
+import Randomize from './components/randomize/index';
+import RegexFormatter from './components/regex-formatter/index';
+import Table, { createMetaTable } from './components/table/index';
+import randomizeTerms from './utils/randomize-terms.function';
+
+export default function BuzzwordBingo(): JSX.Element {
   // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
-  const [cells, setCells] = useState<Array<string>>([]);
+  const [cells, setCells] = React.useState<Array<string>>([]);
   // If null, then randomize 'cells'.
-  const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(
-    null
-  );
-  const [freeCell, setFreeCell] = useState<string | undefined>(undefined);
+  const [randomizedCells, setRandomizedCells] =
+    React.useState<Array<string> | null>(null);
+  const [freeCell, setFreeCell] = React.useState<string | undefined>(undefined);
   // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
-  const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
+  const [formatRegex, setFormatRegex] = React.useState('[0-9]*[.)] ');
   // Error messages to render to the user.
-  const [errorMessages, setErrorMessages] = useState<Array<string>>([]);
+  const [errorMessages, setErrorMessages] = React.useState<Array<string>>([]);
 
   let table, randomizedTable, errorMessageUI;
 
@@ -46,11 +46,6 @@ export default function Home(): JSX.Element {
 
   return (
     <div className="container">
-      <Head>
-        <title>Buzzword Bingo Generator</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <main style={{ width: '80%' }}>
         <FileInput callback={onFileInputCallback} />
         <RegexFormatter initialValue={formatRegex} />
@@ -58,41 +53,6 @@ export default function Home(): JSX.Element {
         {randomizedTable}
         {errorMessageUI}
       </main>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-
-        main {
-          display: inline-flex;
-          flex-direction: column;
-          min-width: 600px;
-        }
-
-        .down-arrow {
-          border: 20px solid;
-          border-color: black transparent transparent transparent;
-          height: 0;
-          margin: 8px auto -12px;
-          width: 0;
-
-          > div:first-of-type {
-            width: 40px;
-            height: 40px;
-            border-left: 1px solid black;
-            border-top: 1px solid black;
-            border-right: 1px solid black;
-            margin: auto;
-          }
-        }
-      `}</style>
     </div>
   );
 

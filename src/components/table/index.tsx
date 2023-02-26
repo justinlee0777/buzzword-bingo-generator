@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import './index.scss';
+
+import * as React from 'react';
 
 const freeCellImageSymbol = new RegExp('!image');
 
@@ -34,27 +36,6 @@ export default function Table({ table, freeCell }: TableProps): JSX.Element {
   return (
     <table>
       <tbody>{tableRows}</tbody>
-      <style jsx global>{`
-        table,
-        th,
-        td {
-          border: 1px solid black;
-          border-collapse: collapse;
-        }
-
-        td {
-          cursor: pointer;
-          padding: 8px;
-          text-align: center;
-          user-select: none;
-          width: 20%;
-        }
-
-        td.active {
-          background-color: darkblue;
-          color: white;
-        }
-      `}</style>
     </table>
   );
 }
@@ -67,7 +48,7 @@ interface TableCellProps {
 }
 
 function TableCell({ cellText, cellImage }: TableCellProps) {
-  const [isActive, setActive] = useState(false);
+  const [isActive, setActive] = React.useState(false);
 
   let cellContent;
   if (cellText) {
