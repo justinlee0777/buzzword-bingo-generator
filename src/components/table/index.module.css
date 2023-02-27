@@ -13,6 +13,5 @@
 }
 
 .active {
-  background-color: darkblue;
-  color: white;
+  filter: invert(1);
 }

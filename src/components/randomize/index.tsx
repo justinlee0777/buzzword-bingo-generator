@@ -1,3 +1,5 @@
+import styles from './index.module.css';
+
 export interface RandomizeProps {
   randomizeFn: () => void;
 }
@@ -5,5 +7,9 @@ export interface RandomizeProps {
 export default function Randomize({
   randomizeFn,
 }: RandomizeProps): JSX.Element {
-  return <button onClick={randomizeFn}>Randomize again</button>;
+  return (
+    <button className={styles.randomize} onClick={randomizeFn}>
+      Randomize again
+    </button>
+  );
 }

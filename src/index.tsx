@@ -35,9 +35,9 @@ export default function BuzzwordBingo(): JSX.Element {
 
       randomizedTable = (
         <>
-          <div className={styles.downArrow}></div>
+          <div className={styles.downArrow}>{String.fromCharCode(8595)}</div>
           <Table table={metaTable} freeCell={freeCell} />
-          <Randomize randomizeFn={() => randomizeFn(cells)} />;
+          <Randomize randomizeFn={() => randomizeFn(cells)} />
         </>
       );
     }
@@ -47,7 +47,7 @@ export default function BuzzwordBingo(): JSX.Element {
 
   return (
     <div className="container">
-      <main className={styles.content} style={{ width: '80%' }}>
+      <main className={styles.content}>
         <FileInput callback={onFileInputCallback} />
         <RegexFormatter initialValue={formatRegex} />
         {table}

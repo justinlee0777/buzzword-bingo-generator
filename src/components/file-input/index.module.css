@@ -1,0 +1,14 @@
+.fileInput {
+  opacity: 0;
+  width: 0;
+}
+
+.pseudoButton {
+  border: 1px solid black;
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px rgb(0 0 0 / 20%);
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 4px;
+  text-align: center;
+}

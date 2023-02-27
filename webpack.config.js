@@ -52,11 +52,17 @@ const config = {
 };
 
 module.exports = (_, argv) => {
+  let override;
+
   if (argv.mode === 'development') {
     const module = { ...config.module };
-    module.rules[0].use.options.configFile = './tsconfig.dev.json';
+    module.rules[0].use.options.configFile = path.resolve(
+      __dirname,
+      './tsconfig.dev.json'
+    );
 
-    const override = {
+    override = {
+      mode: 'development',
       output: {
         ...config.output,
         library: {
@@ -80,11 +86,11 @@ module.exports = (_, argv) => {
         minimize: false,
       },
       devtool: 'source-map',
+      stats: 'verbose',
     };
-
-    return { ...config, ...override };
   } else {
-    const override = {
+    override = {
+      mode: 'production',
       plugins: config.plugins.concat(
         new CopyWebpackPlugin({
           patterns: [
@@ -107,7 +113,9 @@ module.exports = (_, argv) => {
         })
       ),
     };
-
-    return { ...config, ...override };
   }
+
+  const overriddenConfig = { ...config, ...override };
+
+  return overriddenConfig;
 };

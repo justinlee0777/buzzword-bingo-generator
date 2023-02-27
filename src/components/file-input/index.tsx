@@ -1,3 +1,5 @@
+import styles from './index.module.css';
+
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
 
@@ -31,10 +33,16 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
   }
 
   return (
-    <input
-      type="file"
-      accept=".txt"
-      onChange={(event) => onInputChange(event.target.files[0])}
-    />
+    <>
+      <label className={styles.pseudoButton}>
+        <input
+          className={styles.fileInput}
+          type="file"
+          accept=".txt"
+          onChange={(event) => onInputChange(event.target.files[0])}
+        />
+        Load bingo files (.txt)
+      </label>
+    </>
   );
 }

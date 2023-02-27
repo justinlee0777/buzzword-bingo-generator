@@ -12,13 +12,19 @@ interface RegexFormatterProps {
 export default function RegexFormatter({
   initialValue,
 }: RegexFormatterProps): JSX.Element {
+  const inputId = 'regex-input';
   return (
-    <div className={styles.regexFormatter}>
-      <div className={styles.inputContainer}>
-        <input className={styles.input} disabled value={initialValue} />
-        <span className={`${styles.tick} ${styles.tickLeft}`}>/</span>
-        <span className={`${styles.tick} ${styles.tickRight}`}>/</span>
-      </div>
+    <div className={styles.inputContainer}>
+      <label className={styles.inputLabel} htmlFor={inputId}>
+        The value is converted to Javascript RegExp and used to sanitize the
+        cells.
+      </label>
+      <input
+        id={inputId}
+        className={styles.input}
+        disabled
+        value={initialValue}
+      />
     </div>
   );
 }

@@ -59,7 +59,7 @@ function TableCell({ cellText, cellImage }: TableCellProps) {
 
   return (
     <td
-      className={`${styles.tableCell} ${isActive ? 'active' : ''}`}
+      className={`${styles.tableCell} ${isActive ? styles.active : ''}`}
       onClick={() => setActive(!isActive)}
     >
       {cellContent}

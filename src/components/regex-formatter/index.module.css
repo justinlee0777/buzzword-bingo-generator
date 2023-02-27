@@ -1,26 +1,20 @@
-.regexFormatter {
-  display: flex;
-}
-
 .inputContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
   position: relative;
 }
 
 .input {
-  padding: 0 16px;
+  border-style: solid;
+  flex: 1;
+  margin-right: 8px;
+  padding: 4px 16px;
+  width: 0;
 }
 
-.tick {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 8px;
-}
-
-.tickLeft {
-  left: 8px;
-}
-
-.tickRight {
-  right: 8px;
+.inputLabel {
+  flex: 1;
+  font-size: 12px;
 }
