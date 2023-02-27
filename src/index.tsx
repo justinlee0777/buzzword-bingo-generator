@@ -1,6 +1,6 @@
-import './index.scss';
+import styles from './index.module.css';
 
-import * as React from 'react';
+import { useState } from 'react';
 
 import ErrorMessages from './components/error-messages/index';
 import FileInput, { FileInputResult } from './components/file-input/index';
@@ -11,15 +11,16 @@ import randomizeTerms from './utils/randomize-terms.function';
 
 export default function BuzzwordBingo(): JSX.Element {
   // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
-  const [cells, setCells] = React.useState<Array<string>>([]);
+  const [cells, setCells] = useState<Array<string>>([]);
   // If null, then randomize 'cells'.
-  const [randomizedCells, setRandomizedCells] =
-    React.useState<Array<string> | null>(null);
-  const [freeCell, setFreeCell] = React.useState<string | undefined>(undefined);
+  const [randomizedCells, setRandomizedCells] = useState<Array<string> | null>(
+    null
+  );
+  const [freeCell, setFreeCell] = useState<string | undefined>(undefined);
   // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
-  const [formatRegex, setFormatRegex] = React.useState('[0-9]*[.)] ');
+  const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
   // Error messages to render to the user.
-  const [errorMessages, setErrorMessages] = React.useState<Array<string>>([]);
+  const [errorMessages, setErrorMessages] = useState<Array<string>>([]);
 
   let table, randomizedTable, errorMessageUI;
 
@@ -34,7 +35,7 @@ export default function BuzzwordBingo(): JSX.Element {
 
       randomizedTable = (
         <>
-          <div className="down-arrow"></div>
+          <div className={styles.downArrow}></div>
           <Table table={metaTable} freeCell={freeCell} />
           <Randomize randomizeFn={() => randomizeFn(cells)} />;
         </>
@@ -46,7 +47,7 @@ export default function BuzzwordBingo(): JSX.Element {
 
   return (
     <div className="container">
-      <main style={{ width: '80%' }}>
+      <main className={styles.content} style={{ width: '80%' }}>
         <FileInput callback={onFileInputCallback} />
         <RegexFormatter initialValue={formatRegex} />
         {table}

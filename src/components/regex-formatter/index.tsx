@@ -1,6 +1,4 @@
-import './index.scss';
-
-import * as React from 'react';
+import styles from './index.module.css';
 
 interface RegexFormatterProps {
   initialValue: string;
@@ -15,11 +13,11 @@ export default function RegexFormatter({
   initialValue,
 }: RegexFormatterProps): JSX.Element {
   return (
-    <div className="regex-formatter">
-      <div className="input-container">
-        <input disabled value={initialValue} />
-        <span>/</span>
-        <span>/</span>
+    <div className={styles.regexFormatter}>
+      <div className={styles.inputContainer}>
+        <input className={styles.input} disabled value={initialValue} />
+        <span className={`${styles.tick} ${styles.tickLeft}`}>/</span>
+        <span className={`${styles.tick} ${styles.tickRight}`}>/</span>
       </div>
     </div>
   );

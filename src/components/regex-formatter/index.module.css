@@ -1,0 +1,26 @@
+.regexFormatter {
+  display: flex;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.input {
+  padding: 0 16px;
+}
+
+.tick {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+}
+
+.tickLeft {
+  left: 8px;
+}
+
+.tickRight {
+  right: 8px;
+}

@@ -1,9 +1,19 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 const config = {
-  entry: ['./src/index.tsx'],
+  entry: {
+    index: './src/index.tsx',
+  },
+  output: {
+    library: {
+      name: 'BuzzwordBingo',
+      type: 'commonjs',
+      export: 'default',
+    },
+  },
   module: {
     rules: [
       {
@@ -15,14 +25,17 @@ const config = {
         },
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.css$/i,
         use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
           // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              import: false,
+              modules: true,
+            },
+          },
         ],
       },
       {
@@ -34,7 +47,8 @@ const config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  plugins: [],
+  externals: ['react'],
+  plugins: [new MiniCssExtractPlugin()],
 };
 
 module.exports = (_, argv) => {
@@ -43,7 +57,17 @@ module.exports = (_, argv) => {
     module.rules[0].use.options.configFile = './tsconfig.dev.json';
 
     const override = {
-      entry: config.entry.concat('./index.tsx'),
+      output: {
+        ...config.output,
+        library: {
+          ...config.output.library,
+          type: 'var',
+        },
+      },
+      entry: {
+        buzzwordBingo: './src/index.tsx',
+        index: './index.tsx',
+      },
       module,
       plugins: config.plugins.concat(
         new HtmlWebpackPlugin({
@@ -51,6 +75,7 @@ module.exports = (_, argv) => {
           title: 'Buzzword Bingo Generator',
         })
       ),
+      externals: [],
       optimization: {
         minimize: false,
       },

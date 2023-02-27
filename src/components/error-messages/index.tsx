@@ -1,6 +1,4 @@
-import './index.scss';
-
-import * as React from 'react';
+import styles from './index.module.css';
 
 export interface ErrorMessagesProp {
   messages: Array<string>;
@@ -9,5 +7,5 @@ export interface ErrorMessagesProp {
 export default function ErrorMessages({
   messages,
 }: ErrorMessagesProp): JSX.Element {
-  return <span className="error-message">{messages.join('\n')}</span>;
+  return <span className={styles.errorMessage}>{messages.join('\n')}</span>;
 }

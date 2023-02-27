@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
 
