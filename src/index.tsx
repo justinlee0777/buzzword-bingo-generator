@@ -10,8 +10,17 @@ import Table, { createMetaTable } from './components/table/index';
 import randomizeTerms from './utils/randomize-terms.function';
 import { BingoError, BingoErrorType } from './bingo-error.model';
 import { getSheetSize } from './utils/get-sheet-size.function';
+import LoadSheets, { BingoSheetFile } from './components/load-sheets';
+import readFromFileURL from './utils/read-from-file-url.function';
+import getTerms from './utils/get-terms.function';
 
-export default function BuzzwordBingo(): JSX.Element {
+export interface BuzzwordBingoProps {
+  defaultFiles?: Array<BingoSheetFile>;
+}
+
+export default function BuzzwordBingo({
+  defaultFiles,
+}: BuzzwordBingoProps): JSX.Element {
   // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
   const [cells, setCells] = useState<Array<string>>([]);
   const [sheetSideSize, setSheetSideSize] = useState<number>(0);
@@ -82,10 +91,25 @@ export default function BuzzwordBingo(): JSX.Element {
     errorMessageUI = <ErrorMessages messages={errors} />;
   }
 
+  let loadSheets: JSX.Element;
+  if (defaultFiles) {
+    loadSheets = (
+      <LoadSheets
+        options={defaultFiles}
+        onLoadUrl={async (url) => {
+          const textContent = await readFromFileURL(url);
+          const loadedCells = getTerms(textContent);
+          setCellsFromFile(loadedCells);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="container">
       <main className={styles.content}>
         <FileInput callback={onFileInputCallback} />
+        {loadSheets}
         <RegexFormatter
           initialValue={formatRegex}
           onChange={(regex) => {
@@ -105,26 +129,8 @@ export default function BuzzwordBingo(): JSX.Element {
   function onFileInputCallback(result: FileInputResult): void {
     const { cells: resultCells, errorMessages: resultErrorMessages } = result;
 
-    let newErrorMessages = [];
     if (resultCells) {
-      let sideSize: number;
-
-      try {
-        sideSize = getSheetSize(resultCells);
-
-        const [filteredCells, freeCell] = getFreeCell(resultCells);
-
-        setCells(filteredCells);
-        setSheetSideSize(sideSize);
-        setFreeCell(freeCell);
-        randomizeFn(filteredCells);
-      } catch (error) {
-        newErrorMessages = errors.concat({
-          type: BingoErrorType.CELL_COUNT,
-          message: error.message,
-        });
-      }
-      setErrors(newErrorMessages);
+      setCellsFromFile(resultCells);
     } else if (resultErrorMessages) {
       setErrors(
         resultErrorMessages.map((message) => ({
@@ -133,6 +139,28 @@ export default function BuzzwordBingo(): JSX.Element {
         }))
       );
     }
+  }
+
+  function setCellsFromFile(fileCells: Array<string>): void {
+    let newErrorMessages = [];
+    let sideSize: number;
+
+    try {
+      sideSize = getSheetSize(fileCells);
+
+      const [filteredCells, freeCell] = getFreeCell(fileCells);
+
+      setCells(filteredCells);
+      setSheetSideSize(sideSize);
+      setFreeCell(freeCell);
+      randomizeFn(filteredCells);
+    } catch (error) {
+      newErrorMessages = errors.concat({
+        type: BingoErrorType.CELL_COUNT,
+        message: error.message,
+      });
+    }
+    setErrors(newErrorMessages);
   }
 
   function randomizeFn(cellsToRandomize: Array<string>) {

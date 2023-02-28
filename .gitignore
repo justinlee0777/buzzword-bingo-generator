@@ -26,3 +26,5 @@ yarn-error.log*
 .env.production.local
 
 dist
+
+assets/bingosheets/personal

@@ -16,7 +16,7 @@ interface FileInputProps {
  * @param props - property 'callback': Unary function. Sole argument is the state change to propagate to the parent component.
  */
 export default function FileInput({ callback }: FileInputProps): JSX.Element {
-  function onInputChange(file) {
+  function onInputChange(file: File): void {
     readFile(file)
       .then((fileContent) => {
         const terms = getTerms(fileContent);

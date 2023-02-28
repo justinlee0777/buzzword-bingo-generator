@@ -79,6 +79,14 @@ module.exports = (_, argv) => {
         new HtmlWebpackPlugin({
           template: path.resolve(__dirname, './index.html'),
           title: 'Buzzword Bingo Generator',
+        }),
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: './assets',
+              to: 'assets',
+            },
+          ],
         })
       ),
       externals: [],
