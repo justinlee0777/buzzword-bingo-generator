@@ -35,15 +35,17 @@ export default function Table({
         if (isImage(freeCell)) {
           const imageUrl = freeCell.replace(freeCellImageSymbol, '');
           return (
-            <TableCell
-              key={cellNumber}
-              cellImage={imageUrl}
-              disabled={disabled}
-            />
+            <TableCell key="Free" cellImage={imageUrl} disabled={disabled} />
           );
         }
       }
-      return <TableCell key={cellNumber} cellText={cell} disabled={disabled} />;
+      return (
+        <TableCell
+          key={cell.replace(' ', '')}
+          cellText={cell}
+          disabled={disabled}
+        />
+      );
     });
 
     return <tr key={i}>{cells}</tr>;

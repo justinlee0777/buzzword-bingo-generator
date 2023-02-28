@@ -1,5 +1,8 @@
 import styles from './index.module.css';
 
+import { useState } from 'react';
+import * as classNames from 'classnames';
+
 import getTerms from '../../utils/get-terms.function';
 import readFile from '../../utils/read-file.function';
 
@@ -32,6 +35,16 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
       });
   }
 
+  const [helpOpened, setHelpOpened] = useState(false);
+
+  const helpOpenedClassName = {
+    [styles.helpOpened]: helpOpened,
+  };
+
+  const helpClassName = classNames(styles.help, helpOpenedClassName);
+
+  const helpTextClassName = classNames(styles.helpText, helpOpenedClassName);
+
   return (
     <>
       <label className={styles.pseudoButton}>
@@ -43,6 +56,21 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
         />
         Load bingo files (.txt)
       </label>
+      <button
+        className={helpClassName}
+        onClick={() => setHelpOpened(!helpOpened)}
+      >
+        ?
+      </button>
+      <p className={helpTextClassName}>
+        <p>Example text file:</p>
+        <code className={styles.textSample}>
+          <p>1. foo</p>
+          <p>2. bar</p>
+          <p>3. baz</p>
+          <p>[...]</p>
+        </code>
+      </p>
     </>
   );
 }
