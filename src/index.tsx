@@ -55,6 +55,7 @@ export default function BuzzwordBingo(): JSX.Element {
           table={preformattedMetaTable}
           freeCell={freeCell}
           sheetSideSize={sheetSideSize}
+          disabled={true}
         />
       );
     }

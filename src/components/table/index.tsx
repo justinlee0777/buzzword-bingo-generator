@@ -1,6 +1,7 @@
 import styles from './index.module.css';
 
 import { useState } from 'react';
+import * as classnames from 'classnames';
 
 const freeCellImageSymbol = new RegExp('!image');
 
@@ -8,6 +9,7 @@ interface TableProps {
   table: Array<Array<string>>;
   sheetSideSize: number;
   freeCell?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -19,6 +21,7 @@ export default function Table({
   table,
   freeCell,
   sheetSideSize,
+  disabled,
 }: TableProps): JSX.Element {
   const sheetSize = sheetSideSize ** 2;
   const shouldReplaceFreeCell = sheetSize % 2 === 1;
@@ -31,10 +34,16 @@ export default function Table({
       if (shouldReplaceFreeCell && cellNumber === freeSquareIndex) {
         if (isImage(freeCell)) {
           const imageUrl = freeCell.replace(freeCellImageSymbol, '');
-          return <TableCell key={cellNumber} cellImage={imageUrl} />;
+          return (
+            <TableCell
+              key={cellNumber}
+              cellImage={imageUrl}
+              disabled={disabled}
+            />
+          );
         }
       }
-      return <TableCell key={cellNumber} cellText={cell} />;
+      return <TableCell key={cellNumber} cellText={cell} disabled={disabled} />;
     });
 
     return <tr key={i}>{cells}</tr>;
@@ -52,9 +61,10 @@ interface TableCellProps {
   cellText?: string;
   // Must be provided if 'cellText' is not.
   cellImage?: string;
+  disabled?: boolean;
 }
 
-function TableCell({ cellText, cellImage }: TableCellProps) {
+function TableCell({ cellText, cellImage, disabled }: TableCellProps) {
   const [isActive, setActive] = useState(false);
 
   let cellContent;
@@ -64,11 +74,13 @@ function TableCell({ cellText, cellImage }: TableCellProps) {
     cellContent = <img src={cellImage} width="100%" />;
   }
 
+  const tableCellClassname = classnames(styles.tableCell, {
+    [styles.active]: isActive,
+    [styles.disabled]: disabled,
+  });
+
   return (
-    <td
-      className={`${styles.tableCell} ${isActive ? styles.active : ''}`}
-      onClick={() => setActive(!isActive)}
-    >
+    <td className={tableCellClassname} onClick={() => setActive(!isActive)}>
       {cellContent}
     </td>
   );
