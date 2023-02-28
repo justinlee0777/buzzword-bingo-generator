@@ -2,15 +2,12 @@ import styles from './index.module.css';
 
 interface RegexFormatterProps {
   initialValue: string;
+  onChange: (input: string) => void;
 }
 
-/**
- * @param props
- * TODO: Disabling the input for now and setting it with a preset value. Need to get a better understanding of how to do
- * event listeners in React.
- */
 export default function RegexFormatter({
   initialValue,
+  onChange,
 }: RegexFormatterProps): JSX.Element {
   const inputId = 'regex-input';
   return (
@@ -22,8 +19,8 @@ export default function RegexFormatter({
       <input
         id={inputId}
         className={styles.input}
-        disabled
         value={initialValue}
+        onChange={(element) => onChange(element.target.value)}
       />
     </div>
   );

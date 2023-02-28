@@ -8,6 +8,7 @@ import Randomize from './components/randomize/index';
 import RegexFormatter from './components/regex-formatter/index';
 import Table, { createMetaTable } from './components/table/index';
 import randomizeTerms from './utils/randomize-terms.function';
+import { BingoError, BingoErrorType } from './bingo-error.model';
 
 export default function BuzzwordBingo(): JSX.Element {
   // Number of cells to render. For now strict limit is 24 (+ 1 "Free square!")
@@ -20,18 +21,38 @@ export default function BuzzwordBingo(): JSX.Element {
   // Regex to format cells in case there are markings the user would not want. Whatever matches the expression will be removed.
   const [formatRegex, setFormatRegex] = useState('[0-9]*[.)] ');
   // Error messages to render to the user.
-  const [errorMessages, setErrorMessages] = useState<Array<string>>([]);
+  const [errors, setErrors] = useState<Array<BingoError>>([]);
+
+  let regExp: RegExp;
+
+  let newErrors: Array<BingoError> = [...errors];
+
+  try {
+    regExp = new RegExp(formatRegex);
+  } catch (error) {
+    if (newErrors.every((error) => error.type !== BingoErrorType.REGEX)) {
+      newErrors = newErrors.concat({
+        type: BingoErrorType.REGEX,
+        message: error.message,
+      });
+    }
+  }
+
+  if (newErrors.length !== errors.length) {
+    setErrors(newErrors);
+    return <></>;
+  }
 
   let table, randomizedTable, errorMessageUI;
 
-  if (errorMessages.length === 0) {
+  if (errors.length === 0) {
     if (cells.length > 0) {
       const preformattedMetaTable = createMetaTable(cells);
       table = <Table table={preformattedMetaTable} freeCell={freeCell} />;
     }
 
     if (randomizedCells) {
-      const metaTable = createMetaTable(randomizedCells);
+      const metaTable = createMetaTable(formatCells(randomizedCells, regExp));
 
       randomizedTable = (
         <>
@@ -42,14 +63,22 @@ export default function BuzzwordBingo(): JSX.Element {
       );
     }
   } else {
-    errorMessageUI = <ErrorMessages messages={errorMessages} />;
+    errorMessageUI = <ErrorMessages messages={errors} />;
   }
 
   return (
     <div className="container">
       <main className={styles.content}>
         <FileInput callback={onFileInputCallback} />
-        <RegexFormatter initialValue={formatRegex} />
+        <RegexFormatter
+          initialValue={formatRegex}
+          onChange={(regex) => {
+            setFormatRegex(regex);
+            setErrors(
+              errors.filter((error) => error.type !== BingoErrorType.REGEX)
+            );
+          }}
+        />
         {table}
         {randomizedTable}
         {errorMessageUI}
@@ -69,18 +98,24 @@ export default function BuzzwordBingo(): JSX.Element {
         setFreeCell(freeCell);
         randomizeFn(filteredCells);
       } else {
-        newErrorMessages = errorMessages.concat('Text file must have 24 rows.');
+        newErrorMessages = errors.concat({
+          type: BingoErrorType.CELL_COUNT,
+          message: 'Text file must have 24 rows.',
+        });
       }
-      setErrorMessages(newErrorMessages);
+      setErrors(newErrorMessages);
     } else if (resultErrorMessages) {
-      setErrorMessages(resultErrorMessages);
+      setErrors(
+        resultErrorMessages.map((message) => ({
+          message,
+          type: BingoErrorType.INPUT,
+        }))
+      );
     }
   }
 
   function randomizeFn(cellsToRandomize: Array<string>) {
-    setRandomizedCells(
-      randomizeTerms(formatCells(cellsToRandomize, formatRegex))
-    );
+    setRandomizedCells(randomizeTerms(cellsToRandomize));
   }
 }
 
@@ -108,12 +143,7 @@ function getFreeCell(tableCells: Array<string>): [Array<string>, string?] {
   }
 }
 
-function formatCells(
-  cells: Array<string>,
-  replaceExpression: string
-): Array<string> {
-  const regExp = new RegExp(replaceExpression);
-
+function formatCells(cells: Array<string>, regExp: RegExp): Array<string> {
   return cells.map((cell) => {
     return cell.replace(regExp, '');
   });
