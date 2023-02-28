@@ -30,10 +30,6 @@
   font-size: 12px;
 }
 
-.helpText > p {
-  margin: 0;
-}
-
 .helpOpened.helpText {
   display: block;
 }
@@ -42,4 +38,8 @@
   border: 1px solid black;
   display: block;
   padding: 8px;
+}
+
+.textSample > p {
+  margin: 0;
 }

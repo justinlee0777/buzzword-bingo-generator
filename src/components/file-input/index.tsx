@@ -62,15 +62,15 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
       >
         ?
       </button>
-      <p className={helpTextClassName}>
-        <p>Example text file:</p>
+      <div className={helpTextClassName}>
+        <span>Example text file:</span>
         <code className={styles.textSample}>
           <p>1. foo</p>
           <p>2. bar</p>
           <p>3. baz</p>
           <p>[...]</p>
         </code>
-      </p>
+      </div>
     </>
   );
 }

@@ -1,6 +1,6 @@
 {
   "name": "buzzword-bingo-generator",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "scripts": {
     "start": "npm run build -- --mode=development && http-server -c-1 ./dist",
     "build": "rm -rf dist && webpack",
