@@ -6,6 +6,7 @@ const freeCellImageSymbol = new RegExp('!image');
 
 interface TableProps {
   table: Array<Array<string>>;
+  sheetSideSize: number;
   freeCell?: string;
 }
 
@@ -14,14 +15,20 @@ interface TableProps {
  * - property table: 5x5 array to create the table from.
  * - property freeCell: overridden free cell.
  */
-export default function Table({ table, freeCell }: TableProps): JSX.Element {
-  const freeSquareIndex = Math.ceil(25 / 2) - 1;
+export default function Table({
+  table,
+  freeCell,
+  sheetSideSize,
+}: TableProps): JSX.Element {
+  const sheetSize = sheetSideSize ** 2;
+  const shouldReplaceFreeCell = sheetSize % 2 === 1;
+  const freeSquareIndex = Math.ceil(sheetSize / 2) - 1;
 
   const tableRows = table.map((row, i) => {
     const rowNumber = i * 5;
     const cells = row.map((cell, j) => {
       const cellNumber = rowNumber + j;
-      if (cellNumber === freeSquareIndex) {
+      if (shouldReplaceFreeCell && cellNumber === freeSquareIndex) {
         if (isImage(freeCell)) {
           const imageUrl = freeCell.replace(freeCellImageSymbol, '');
           return <TableCell key={cellNumber} cellImage={imageUrl} />;
@@ -74,13 +81,21 @@ function isImage(freeCell: string): boolean {
 /**
  * @params terms - Array<string>. Cells to format.
  */
-export function createMetaTable(terms: Array<string>): Array<Array<string>> {
-  return [
-    terms.slice(0, 5),
-    terms.slice(5, 10),
-    // Center square is always 'Free square!'
-    terms.slice(10, 12).concat('Free square!', terms.slice(12, 14)),
-    terms.slice(14, 19),
-    terms.slice(19, 24),
-  ];
+export function createMetaTable(
+  terms: Array<string>,
+  sheetSideSize: number
+): Array<Array<string>> {
+  if (sheetSideSize % 2 === 1) {
+    // Always add "Free square!" for odd-number sided sheets. It is expected it will later be replaced.
+    terms = [].concat(terms.slice(0, 12), 'Free square!', terms.slice(12, 24));
+  }
+
+  return Array(sheetSideSize)
+    .fill(undefined)
+    .map((_, i) => {
+      const begin = i * sheetSideSize;
+      const end = begin + sheetSideSize;
+
+      return terms.slice(begin, end);
+    });
 }
