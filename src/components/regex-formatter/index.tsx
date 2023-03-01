@@ -19,6 +19,7 @@ export default function RegexFormatter({
       <input
         id={inputId}
         className={styles.input}
+        aria-label="Use this input to transform the loaded bingo sheet's cells. The string is translated to Javascript RegExp."
         value={initialValue}
         onChange={(element) => onChange(element.target.value)}
       />

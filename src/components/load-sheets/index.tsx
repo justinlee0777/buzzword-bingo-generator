@@ -18,6 +18,7 @@ export default function LoadSheets({
     <button
       className={styles.loadDefaultSheet}
       key={option.name}
+      aria-label={`Load ${option.name} bingo sheet`}
       onClick={() => onLoadUrl(option.path)}
     >
       {option.name}

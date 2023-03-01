@@ -59,13 +59,7 @@ module.exports = (_, argv) => {
 
     override = {
       mode: 'development',
-      output: {
-        ...config.output,
-        library: {
-          ...config.output.library,
-          type: 'var',
-        },
-      },
+      output: {},
       entry: {
         buzzwordBingo: './src/index.tsx',
         index: './index.tsx',

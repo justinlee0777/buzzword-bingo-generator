@@ -76,6 +76,20 @@ function TableCell({ cellText, cellImage, disabled }: TableCellProps) {
     cellContent = <img src={cellImage} width="100%" />;
   }
 
+  if (!disabled) {
+    const verb = isActive ? 'Unset' : 'Set';
+
+    cellContent = (
+      <button
+        className={styles.cellButton}
+        aria-label={`${verb} "${cellText}"`}
+        onClick={() => setActive(!isActive)}
+      >
+        {cellContent}
+      </button>
+    );
+  }
+
   const tableCellClassname = classnames(styles.tableCell, {
     [styles.active]: isActive,
     [styles.disabled]: disabled,

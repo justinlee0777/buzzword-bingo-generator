@@ -50,6 +50,7 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
       <label className={styles.pseudoButton}>
         <input
           className={styles.fileInput}
+          aria-label="Click to load bingo sheets from your file system. Only .txt files allowed."
           type="file"
           accept=".txt"
           onChange={(event) => onInputChange(event.target.files[0])}
@@ -58,6 +59,7 @@ export default function FileInput({ callback }: FileInputProps): JSX.Element {
       </label>
       <button
         className={helpClassName}
+        aria-label="Click to get usage notes for bingo sheet"
         onClick={() => setHelpOpened(!helpOpened)}
       >
         ?
