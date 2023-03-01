@@ -4,14 +4,11 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 const config = {
-  entry: {
-    index: './src/index.tsx',
-  },
+  entry: './src/index.tsx',
   output: {
+    filename: 'index.js',
     library: {
-      name: 'BuzzwordBingo',
-      type: 'commonjs',
-      export: 'default',
+      type: 'commonjs-module',
     },
   },
   module: {
@@ -27,7 +24,6 @@ const config = {
       {
         test: /\.css$/i,
         use: [
-          // Translates CSS into CommonJS
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
@@ -48,7 +44,7 @@ const config = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   externals: ['react'],
-  plugins: [new MiniCssExtractPlugin()],
+  plugins: [new MiniCssExtractPlugin({ filename: 'index.css' })],
 };
 
 module.exports = (_, argv) => {
