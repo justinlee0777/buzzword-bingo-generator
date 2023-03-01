@@ -1,7 +1,6 @@
 .content {
   display: inline-flex;
   flex-direction: column;
-  min-width: 600px;
 }
 
 .downArrow {
