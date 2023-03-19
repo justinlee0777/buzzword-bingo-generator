@@ -27,7 +27,7 @@
 
 .helpText {
   display: none;
-  font-size: 12px;
+  font-size: 0.75em;
 }
 
 .helpOpened.helpText {
