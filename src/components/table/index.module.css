@@ -16,7 +16,6 @@
 .tableCell,
 .cellButton {
   font-size: 1em;
-  word-break: break-all;
 }
 
 .active {
@@ -30,4 +29,16 @@
 .cellButton {
   background-color: transparent;
   border: 0;
+}
+
+@media (max-width: 600px) {
+  .tableCell,
+  .cellButton {
+    font-size: 0.75em;
+    word-break: break-all;
+  }
+
+  .tableCell {
+    padding: 0;
+  }
 }
